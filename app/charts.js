@@ -53,6 +53,7 @@ export function spark(values, color) {
   const w = 120, h = 34, min = Math.min.apply(null, values), max = Math.max.apply(null, values);
   const span = (max - min) || 1;
   const pts = values.map((v, i) => (i * w / (values.length - 1)).toFixed(1) + "," + (h - 4 - (v - min) / span * (h - 8)).toFixed(1)).join(" ");
+  const firstY = h - 4 - (values[0] - min) / span * (h - 8);
   const lastX = w, lastY = h - 4 - (values[values.length - 1] - min) / span * (h - 8);
-  return '<svg class="spark" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true"><polyline points="' + pts + '" fill="none" stroke="' + (color || "#2e3a8c") + '" stroke-width="2"/><circle cx="' + lastX.toFixed(1) + '" cy="' + lastY.toFixed(1) + '" r="3" fill="#c65d3b"/></svg>';
+  return '<svg class="spark" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true"><line x1="0" y1="' + (h - 1) + '" x2="' + w + '" y2="' + (h - 1) + '" stroke="#e2ddcf"/><polyline points="' + pts + '" fill="none" stroke="' + (color || "#2e3a8c") + '" stroke-width="2"/><circle cx="0" cy="' + firstY.toFixed(1) + '" r="2.5" fill="' + (color || "#2e3a8c") + '"/><circle cx="' + lastX.toFixed(1) + '" cy="' + lastY.toFixed(1) + '" r="3" fill="#c65d3b"/></svg>';
 }

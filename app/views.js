@@ -86,7 +86,7 @@ export function people() {
 
 export function provinces() {
   const rows = PROVINCES.filter(p => p.pop).slice().sort((a, b) => b.pop - a.pop);
-  return '<p class="kicker">Provinces</p><h1>Ten largest provinces, and the widest gaps</h1>' +
+  return '<p class="kicker">Provinces</p><h1>Key provinces, and the widest gaps</h1>' +
     '<p class="lede">Population is a BPS interim projection for mid-2024. Poverty is BPS, September 2024. Unemployment (TPT) is BPS, August 2024. Human development (HDI) is BPS, 2024. A dash means that figure was not verified for that province — it is left blank, not guessed.</p>' +
     '<p><input id="prov-q" type="search" placeholder="Search a province…" aria-label="Search provinces" style="width:100%"></p>' +
     '<div id="prov-table">' + provTable(PROVINCES) + "</div>" +
@@ -122,6 +122,7 @@ export function compare() {
     '<p class="lede">Pick any two provinces. Poverty, unemployment and HDI are compared on the same 2024 basis; population is the BPS mid-2024 projection.</p>' +
     '<div class="grid two"><div><label for="cmp-a">Province A</label><select id="cmp-a" style="width:100%">' + opts("DKI Jakarta") + '</select></div>' +
     '<div><label for="cmp-b">Province B</label><select id="cmp-b" style="width:100%">' + opts("Highland Papua") + '</select></div></div>' +
+    '<p class="legend" style="margin-top:14px"><span class="sw sw-a"></span> Province A &nbsp;·&nbsp; <span class="sw sw-b"></span> Province B &nbsp;·&nbsp; bar length is relative to the larger of the two</p>' +
     '<div id="cmp-out" style="margin-top:18px">' + cmpHtml("DKI Jakarta", "Highland Papua") + "</div>" +
     '<p class="src">Sources: BPS — population, interim projection mid-2024; poverty, September 2024; unemployment (TPT), August 2024; HDI, 2024. A dash means the figure was not verified for that province.</p>';
 }

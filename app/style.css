@@ -82,6 +82,9 @@ button.warm:hover{background:var(--terra-dark)}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo-mid),var(--indigo));border-radius:99px}
 .bar i.b{background:linear-gradient(90deg,#d97a52,var(--terra))}
 .legend{font:13px system-ui,Arial,sans-serif;color:var(--muted)}
+.sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px}
+.sw-a{background:var(--indigo)}
+.sw-b{background:var(--terra)}
 .callout{border-left:5px solid var(--terra);background:#fff;padding:14px 18px;border-radius:0 12px 12px 0;box-shadow:var(--shadow)}
 .diff{border:1px solid var(--line);border-left:5px solid var(--amber);background:#fffdf8;border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);margin-bottom:16px}
 .diff h3{margin:0 0 8px}
@@ -102,4 +105,6 @@ footer strong{color:#fff}
   th,td{padding:9px 8px;font-size:13px}
   .big{font-size:28px}
   .tabs{border-radius:14px;width:100%}
+  .kicker{font-size:11px;letter-spacing:.08em;line-height:1.5;max-width:100%;white-space:normal}
+  .strip{grid-template-columns:1fr 1fr}
 }
