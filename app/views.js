@@ -11,9 +11,9 @@ function kpi(key, note) {
   const cls = d > 0 ? "up" : d < 0 ? "down" : "flat";
   const sign = d > 0 ? "+" : "";
   return '<div class="card"><h3>' + ind.label + '</h3><div class="big">' + fmt(v, ind.dec) +
-    ' <span style="font-size:15px;color:#5b6b76">' + ind.unit + "</span></div>" +
+    ' <span style="font-size:15px;color:#5a6478">' + ind.unit + "</span></div>" +
     '<div style="margin:8px 0 2px"><span class="pill ' + cls + '">' + sign + fmt(d, ind.dec) + " since 2015</span></div>" +
-    spark(ind.values) + '<p class="src">' + (note || "World Bank, 2024") + "</p></div>";
+    spark(ind.values, "#2e3a8c") + '<p class="src">' + (note || "World Bank, 2024") + "</p></div>";
 }
 function chartBlock(key, title, blurb) {
   const ind = INDICATORS[key];
@@ -30,9 +30,16 @@ function tableRows(keys) {
 }
 
 export function home() {
+  const withPop = PROVINCES.filter(p => p.pop).sort((a, b) => b.pop - a.pop)[0];
+  const withHdi = PROVINCES.filter(p => p.hdi !== null && p.hdi !== undefined).sort((a, b) => b.hdi - a.hdi)[0];
+  const withPov = PROVINCES.filter(p => p.poverty !== null && p.poverty !== undefined).sort((a, b) => a.poverty - b.poverty)[0];
   return '<p class="kicker">Indonesia · 2015–2024 · World Bank &amp; BPS</p>' +
     "<h1>Indonesia in numbers, without the noise.</h1>" +
     '<p class="lede">NusaStats gathers Indonesia\u2019s headline statistics in one place: the economy, the people, and the provinces — each figure with its source and year, each chart drawn from a ten-year series you can download.</p>' +
+    '<div class="strip">' +
+    '<div class="item"><div class="lab">Largest province</div><div class="val">' + withPop.name + '</div><div class="sub">' + (withPop.pop / 1e6).toFixed(1) + ' million people · BPS, mid-2024</div></div>' +
+    '<div class="item"><div class="lab">Highest human development</div><div class="val">' + withHdi.name + '</div><div class="sub">HDI ' + withHdi.hdi.toFixed(2) + ' · BPS, 2024</div></div>' +
+    '<div class="item"><div class="lab">Lowest poverty</div><div class="val">' + withPov.name + '</div><div class="sub">' + withPov.poverty.toFixed(2) + '% · BPS, Sep 2024</div></div></div>' +
     '<div class="grid kpis">' + kpi("gdp") + kpi("population") + kpi("gdpPcap") + kpi("inflation") + "</div>" +
     '<div class="grid kpis" style="margin-top:14px">' + kpi("growth") + kpi("poverty") + kpi("lifeExp") + kpi("internet") + "</div>" +
     chartBlock("gdp", "The economy, 2015–2024", "GDP rose from US$860.9 billion in 2015 to US$1,396.3 billion in 2024, with one fall — 2020, the pandemic year — in between. Growth returned to about 5% a year from 2022.") +
@@ -60,7 +67,7 @@ export function economy() {
     '<input id="calc-amt" type="number" value="1000000" min="0" step="1000">' +
     '<label for="calc-from">From year</label><select id="calc-from">' + YEARS.map(y => "<option" + (y === 2015 ? " selected" : "") + ">" + y + "</option>").join("") + "</select>" +
     '<label for="calc-to">To year</label><select id="calc-to">' + YEARS.map(y => "<option" + (y === 2024 ? " selected" : "") + ">" + y + "</option>").join("") + "</select>" +
-    '<p style="margin-top:12px"><button class="btn" id="calc-go">Calculate</button></p>' +
+    '<p style="margin-top:12px"><button class="btn warm" id="calc-go">Calculate</button></p>' +
     '<p id="calc-out" aria-live="polite"><strong>Rp 1,000,000 in 2015 ≈ Rp 1,306,000 in 2024</strong> at the CPI rates in this series. Check it: change the years and press Calculate.</p>' +
     '<p class="src">Rates used: 2016 3.53%, 2017 3.81%, 2018 3.20%, 2019 3.03%, 2020 1.92%, 2021 1.56%, 2022 4.21%, 2023 3.67%, 2024 2.18% (World Bank FP.CPI.TOTL.ZG).</p></div>' +
     "<h2>All economy indicators</h2>" + tableRows(["gdp", "growth", "gdpPcap", "gdpPcapPpp", "inflation", "unemployment", "exports", "imports", "agri", "industry", "services"]);
@@ -101,9 +108,11 @@ export function provinces() {
 }
 export function provTable(list) {
   const cell = v => v === null || v === undefined ? "—" : v;
-  return '<div class="table-wrap"><table><thead><tr><th data-s=\'name\'>Province</th><th class=\'num\' data-s=\'pop\'>Population 2024</th><th class=\'num\' data-s=\'poverty\'>Poverty % (Sep 2024)</th><th class=\'num\' data-s=\'tpt\'>Unemployment % (Aug 2024)</th><th class=\'num\' data-s=\'hdi\'>HDI 2024</th><th class=\'num\' data-s=\'grdpPcap\'>GRDP/capita Rp m</th></tr></thead><tbody>' +
-    list.map(p => "<tr><td><strong>" + p.name + "</strong></td><td class='num'>" + (p.pop ? p.pop.toLocaleString("en-US") : "—") + "</td><td class='num'>" + cell(p.poverty === null ? null : p.poverty.toFixed(2)) + "</td><td class='num'>" + cell(p.tpt === null ? null : p.tpt.toFixed(2)) + "</td><td class='num'>" + cell(p.hdi === null ? null : p.hdi.toFixed(2)) + "</td><td class='num'>" + cell(p.grdpPcap === null ? null : p.grdpPcap.toFixed(2)) + "</td></tr>").join("") +
-    "</tbody></table></div><p class='src'>Click a column heading to sort. GRDP per capita is shown only for the five provinces verified at current prices (DKI Jakarta 344.35, East Kalimantan 212.18, North Kalimantan 198.43, Riau 165.35, Riau Islands 161.42 Rp million).</p>";
+  const complete = p => [p.pop, p.poverty, p.tpt, p.hdi, p.grdpPcap].filter(v => v !== null && v !== undefined).length;
+  const dots = p => { const n = complete(p); let s = ""; for (let i = 0; i < 5; i++) s += '<span class="' + (i < n ? "on" : "off") + '">●</span>'; return '<span class="dots">' + s + '</span> ' + n + "/5"; };
+  return '<div class="table-wrap"><table><thead><tr><th data-s=\'name\'>Province</th><th class=\'num\' data-s=\'pop\'>Population 2024</th><th class=\'num\' data-s=\'poverty\'>Poverty % (Sep 2024)</th><th class=\'num\' data-s=\'tpt\'>Unemployment % (Aug 2024)</th><th class=\'num\' data-s=\'hdi\'>HDI 2024</th><th class=\'num\' data-s=\'grdpPcap\'>GRDP/capita Rp m</th><th>Data</th></tr></thead><tbody>' +
+    list.map(p => "<tr><td><strong>" + p.name + "</strong></td><td class='num'>" + (p.pop ? p.pop.toLocaleString("en-US") : "—") + "</td><td class='num'>" + cell(p.poverty === null ? null : p.poverty.toFixed(2)) + "</td><td class='num'>" + cell(p.tpt === null ? null : p.tpt.toFixed(2)) + "</td><td class='num'>" + cell(p.hdi === null ? null : p.hdi.toFixed(2)) + "</td><td class='num'>" + cell(p.grdpPcap === null ? null : p.grdpPcap.toFixed(2)) + "</td><td>" + dots(p) + "</td></tr>").join("") +
+    "</tbody></table></div><p class='src'>Click a column heading to sort. The Data column counts how many of the five figures are verified for that province (● = present, ○ = missing). GRDP per capita is shown only for the five provinces verified at current prices (DKI Jakarta 344.35, East Kalimantan 212.18, North Kalimantan 198.43, Riau 165.35, Riau Islands 161.42 Rp million).</p>";
 }
 
 export function compare() {
@@ -127,7 +136,18 @@ export function cmpHtml(aName, bName) {
       '<div class="bar-row"><span>' + b.name + '</span><span class="bar"><i class="b" style="width:' + bw.toFixed(1) + '%"></i></span><strong>' + disp(bv) + "</strong></div></div>";
   };
   const maxPop = Math.max(a.pop || 0, b.pop || 0) || 1;
-  return row("Population, 2024", a.pop ? a.pop / 1e6 : null, b.pop ? b.pop / 1e6 : null, "million", maxPop / 1e6) +
+  const diffLine = (label, av, bv, unit, dec) => {
+    if (av === null || av === undefined || bv === null || bv === undefined) return "<li><strong>" + label + ":</strong> not comparable — one province is missing a verified figure (—).</li>";
+    const d = bv - av, higher = d > 0 ? b.name : a.name, lower = d > 0 ? a.name : b.name;
+    return "<li><strong>" + label + ":</strong> " + higher + " is higher by " + Math.abs(d).toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + (unit ? " " + unit : "") + " than " + lower + ".</li>";
+  };
+  const summary = '<div class="diff"><h3>The gap, in one line each</h3><ul>' +
+    diffLine("Population", a.pop ? a.pop / 1e6 : null, b.pop ? b.pop / 1e6 : null, "million", 2) +
+    diffLine("Poverty", a.poverty, b.poverty, "points", 2) +
+    diffLine("Unemployment", a.tpt, b.tpt, "points", 2) +
+    diffLine("HDI", a.hdi, b.hdi, "points", 2) +
+    "</ul></div>";
+  return summary + row("Population, 2024", a.pop ? a.pop / 1e6 : null, b.pop ? b.pop / 1e6 : null, "million", maxPop / 1e6) +
     row("Poverty, Sep 2024", a.poverty, b.poverty, "%", 30) +
     row("Unemployment (TPT), Aug 2024", a.tpt, b.tpt, "%", 7) +
     row("Human Development Index, 2024", a.hdi, b.hdi, "", 85) +

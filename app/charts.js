@@ -5,7 +5,7 @@
 import { YEARS } from "./data.js";
 function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
 export function lineChart(values, opts) {
-  const o = Object.assign({ color: "#0b6b5c", w: 680, h: 270, dec: 1, unit: "" }, opts || {});
+  const o = Object.assign({ color: "#2e3a8c", w: 680, h: 270, dec: 1, unit: "" }, opts || {});
   const padL = 60, padR = 14, padT = 26, padB = 30;
   const min = Math.min.apply(null, values), max = Math.max.apply(null, values);
   const span = (max - min) || 1, lo = min - span * 0.14, hi = max + span * 0.14;
@@ -25,7 +25,7 @@ export function lineChart(values, opts) {
   let dots = "";
   values.forEach((v, i) => {
     const last = i === values.length - 1;
-    dots += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="' + (last ? 5 : 3) + '" fill="' + o.color + '"' + (last ? ' stroke="#fff" stroke-width="2"' : "") + '><title>' + YEARS[i] + ": " + fmtV(v) + (o.unit ? " " + esc(o.unit) : "") + "</title></circle>";
+    dots += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="' + (last ? 5.5 : 3) + '" fill="' + (last ? "#c65d3b" : o.color) + '"' + (last ? ' stroke="#fff" stroke-width="2"' : "") + '><title>' + YEARS[i] + ": " + fmtV(v) + (o.unit ? " " + esc(o.unit) : "") + "</title></circle>";
   });
   const endLabel = '<text class="axis-val" x="' + x(values.length - 1).toFixed(1) + '" y="' + (y(values[values.length - 1]) - 12).toFixed(1) + '" text-anchor="end">' + fmtV(values[values.length - 1]) + (o.unit ? " " + esc(o.unit) : "") + " · 2024</text>";
   const startLabel = '<text class="axis" x="' + x(0).toFixed(1) + '" y="' + (y(values[0]) - 10).toFixed(1) + '" text-anchor="start">' + fmtV(values[0]) + " · 2015</text>";
@@ -36,7 +36,7 @@ export function lineChart(values, opts) {
 }
 export function barChart(rows, opts) {
   // rows: [{label, value}] — horizontal bars on a light track, value at the end.
-  const o = Object.assign({ color: "#0b6b5c", w: 680, dec: 1, unit: "" }, opts || {});
+  const o = Object.assign({ color: "#2e3a8c", w: 680, dec: 1, unit: "" }, opts || {});
   const max = Math.max.apply(null, rows.map(r => r.value)) || 1;
   const rowH = 36, h = rows.length * rowH + 10;
   let body = "";
@@ -54,5 +54,5 @@ export function spark(values, color) {
   const span = (max - min) || 1;
   const pts = values.map((v, i) => (i * w / (values.length - 1)).toFixed(1) + "," + (h - 4 - (v - min) / span * (h - 8)).toFixed(1)).join(" ");
   const lastX = w, lastY = h - 4 - (values[values.length - 1] - min) / span * (h - 8);
-  return '<svg class="spark" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true"><polyline points="' + pts + '" fill="none" stroke="' + (color || "#0b6b5c") + '" stroke-width="2"/><circle cx="' + lastX.toFixed(1) + '" cy="' + lastY.toFixed(1) + '" r="3" fill="' + (color || "#0b6b5c") + '"/></svg>';
+  return '<svg class="spark" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true"><polyline points="' + pts + '" fill="none" stroke="' + (color || "#2e3a8c") + '" stroke-width="2"/><circle cx="' + lastX.toFixed(1) + '" cy="' + lastY.toFixed(1) + '" r="3" fill="#c65d3b"/></svg>';
 }
