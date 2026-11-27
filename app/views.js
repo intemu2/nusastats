@@ -12,21 +12,21 @@ function kpi(key, note) {
   const sign = d > 0 ? "+" : "";
   return '<div class="card"><h3>' + ind.label + '</h3><div class="big">' + fmt(v, ind.dec) +
     ' <span style="font-size:15px;color:#5b6b76">' + ind.unit + "</span></div>" +
-    '<div class="delta ' + cls + '">' + sign + fmt(d, ind.dec) + " since 2015</div>" +
+    '<div style="margin:8px 0 2px"><span class="pill ' + cls + '">' + sign + fmt(d, ind.dec) + " since 2015</span></div>" +
     spark(ind.values) + '<p class="src">' + (note || "World Bank, 2024") + "</p></div>";
 }
 function chartBlock(key, title, blurb) {
   const ind = INDICATORS[key];
   return "<h2>" + title + "</h2><p>" + blurb + "</p>" +
-    lineChart(ind.values, { dec: ind.dec, unit: ind.unit }) +
+    '<div class="card chart-card">' + lineChart(ind.values, { dec: ind.dec, unit: ind.unit }) + "</div>" +
     '<p class="src">Source: World Bank Open Data, indicator ' + ind.code + " — " + ind.label +
     ", Indonesia, 2015–2024. Latest value: " + fmt(last(key), ind.dec) + " " + ind.unit + " (2024).</p>";
 }
 function tableRows(keys) {
-  return "<table><thead><tr><th>Indicator</th><th class='num'>2015</th><th class='num'>2020</th><th class='num'>2024</th><th class='num'>Change 2015–24</th></tr></thead><tbody>" +
+  return '<div class="table-wrap"><table><thead><tr><th>Indicator</th><th class=\'num\'>2015</th><th class=\'num\'>2020</th><th class=\'num\'>2024</th><th class=\'num\'>Change 2015–24</th></tr></thead><tbody>' +
     keys.map(k => { const ind = INDICATORS[k];
       return "<tr><td>" + ind.label + "</td><td class='num'>" + fmt(ind.values[0], ind.dec) + "</td><td class='num'>" + fmt(ind.values[5], ind.dec) + "</td><td class='num'><strong>" + fmt(ind.values[9], ind.dec) + "</strong></td><td class='num'>" + (change(k) > 0 ? "+" : "") + fmt(change(k), ind.dec) + " " + ind.unit + "</td></tr>";
-    }).join("") + "</tbody></table>";
+    }).join("") + "</tbody></table></div>";
 }
 
 export function home() {
@@ -101,9 +101,9 @@ export function provinces() {
 }
 export function provTable(list) {
   const cell = v => v === null || v === undefined ? "—" : v;
-  return "<table><thead><tr><th data-s='name'>Province</th><th class='num' data-s='pop'>Population 2024</th><th class='num' data-s='poverty'>Poverty % (Sep 2024)</th><th class='num' data-s='tpt'>Unemployment % (Aug 2024)</th><th class='num' data-s='hdi'>HDI 2024</th><th class='num' data-s='grdpPcap'>GRDP/capita Rp m</th></tr></thead><tbody>" +
+  return '<div class="table-wrap"><table><thead><tr><th data-s=\'name\'>Province</th><th class=\'num\' data-s=\'pop\'>Population 2024</th><th class=\'num\' data-s=\'poverty\'>Poverty % (Sep 2024)</th><th class=\'num\' data-s=\'tpt\'>Unemployment % (Aug 2024)</th><th class=\'num\' data-s=\'hdi\'>HDI 2024</th><th class=\'num\' data-s=\'grdpPcap\'>GRDP/capita Rp m</th></tr></thead><tbody>' +
     list.map(p => "<tr><td><strong>" + p.name + "</strong></td><td class='num'>" + (p.pop ? p.pop.toLocaleString("en-US") : "—") + "</td><td class='num'>" + cell(p.poverty === null ? null : p.poverty.toFixed(2)) + "</td><td class='num'>" + cell(p.tpt === null ? null : p.tpt.toFixed(2)) + "</td><td class='num'>" + cell(p.hdi === null ? null : p.hdi.toFixed(2)) + "</td><td class='num'>" + cell(p.grdpPcap === null ? null : p.grdpPcap.toFixed(2)) + "</td></tr>").join("") +
-    "</tbody></table><p class='src'>Click a column heading to sort. GRDP per capita is shown only for the five provinces verified at current prices (DKI Jakarta 344.35, East Kalimantan 212.18, North Kalimantan 198.43, Riau 165.35, Riau Islands 161.42 Rp million).</p>";
+    "</tbody></table></div><p class='src'>Click a column heading to sort. GRDP per capita is shown only for the five provinces verified at current prices (DKI Jakarta 344.35, East Kalimantan 212.18, North Kalimantan 198.43, Riau 165.35, Riau Islands 161.42 Rp million).</p>";
 }
 
 export function compare() {

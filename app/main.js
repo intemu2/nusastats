@@ -49,7 +49,7 @@ function wire(key) {
       const ind = INDICATORS[b.dataset.k];
       document.getElementById("econ-chart").innerHTML =
         "<h2>" + ind.label + "</h2><p>" + ind.label + ", Indonesia, 2015–2024.</p>" +
-        '<div id="chart-holder"></div><p class="src">Source: World Bank Open Data, indicator ' + ind.code + ", 2015–2024. Latest: " + fmt(ind.values[9], ind.dec) + " " + ind.unit + " (2024).</p>";
+        '<div class="card chart-card" id="chart-holder"></div><p class="src">Source: World Bank Open Data, indicator ' + ind.code + ", 2015–2024. Latest: " + fmt(ind.values[9], ind.dec) + " " + ind.unit + " (2024).</p>";
       import("./charts.js").then(m => {
         document.getElementById("chart-holder").innerHTML = m.lineChart(ind.values, { dec: ind.dec, unit: ind.unit });
       });
@@ -106,7 +106,10 @@ function wire(key) {
     document.getElementById("csv-btn").addEventListener("click", () => download("nusastats-indonesia-national-2015-2024.csv", nationalCsv()));
     document.getElementById("csv-prov-btn").addEventListener("click", () => download("nusastats-indonesia-provinces-2024.csv", provCsv()));
     let sortKey = "pop", asc = false;
-    document.querySelectorAll("#app table th").forEach(th => th.addEventListener("click", () => {
+    if (app.dataset.dataSortBound) return;
+    app.dataset.dataSortBound = "1";
+    app.addEventListener("click", e => {
+      const th = e.target.closest("th"); if (!th) return;
       const k = th.dataset.s; if (!k) return;
       if (k === sortKey) asc = !asc; else { sortKey = k; asc = k === "name"; }
       const list = PROVINCES.slice().sort((a, b) => {
@@ -116,9 +119,9 @@ function wire(key) {
         if (typeof av === "string") return asc ? av.localeCompare(bv) : bv.localeCompare(av);
         return asc ? av - bv : bv - av;
       });
-      const tables = document.querySelectorAll("#app table");
-      if (tables[1]) tables[1].outerHTML = provTable(list);
-    }));
+      const wrap = document.querySelectorAll("#app .table-wrap")[1];
+      if (wrap) wrap.outerHTML = provTable(list);
+    });
   }
 }
 window.addEventListener("hashchange", render);
